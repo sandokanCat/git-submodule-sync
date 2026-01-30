@@ -1,0 +1,19 @@
+# .gitmodules EXAMPLE (edit as you need!)
+
+[submodule "python-hash-audit"]
+    path = public/python-hash-audit
+    url = https://github.com/sandokanCat/python-hash-audit
+    branch = main
+    ignore = none
+
+[submodule "document-integrity-tools"]
+    path = public/document-integrity-tools
+    url = https://github.com/sandokanCat/document-integrity-tools
+    branch = main
+    ignore = none
+
+[submodule "open-utils"]
+    path = public/open-utils
+    url = https://github.com/sandokanCat/open-utils
+    branch = main
+    ignore = none
