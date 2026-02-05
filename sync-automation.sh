@@ -29,7 +29,7 @@ print_step() {
 
 # 1. Ensure we are in a git repository
 if [ ! -d .git ]; then
-    echo "Error: Not a git repository."
+    printf "%b[ERROR] Not a git repository.\n" "$RED" "$NC"
     exit 1
 fi
 
@@ -44,15 +44,14 @@ for name in $submodule_names; do
     url=$(git config -f .gitmodules --get "submodule.$name.url")
     branch=$(git config -f .gitmodules --get "submodule.$name.branch" || echo "main")
 
-    echo "---------------------------------------------------"
-    echo "Processing submodule: $name"
-    echo "Path:   $path"
-    echo "URL:    $url"
-    echo "Branch: $branch"
+    print_step "Processing submodule: $name"
+    printf "Path:   $path\n"
+    printf "URL:    $url\n"
+    printf "Branch: $branch\n"
 
     # 3. Check if the submodule directory exists
     if [ ! -d "$path" ] || [ -z "$(ls -A "$path" 2>/dev/null)" ]; then
-        echo "Submodule path '$path' is missing or empty. Adding/initializing..."
+        echo "Submodule path '$path' is missing or empty. Adding/initializing"
         
         # Ensure parent directory exists
         mkdir -p "$(dirname "$path")"
@@ -60,10 +59,10 @@ for name in $submodule_names; do
         # Try to add the submodule (in case it's not in the index)
         # If it's already in the index but missing on disk, 'git submodule update --init' handles it.
         if ! git submodule status "$path" >/dev/null 2>&1; then
-            echo "Registering and cloning new submodule..."
+            print_step "Registering and cloning new submodule"
             git submodule add -b "$branch" --force "$url" "$path"
         else
-            echo "Updating existing but missing submodule..."
+            print_step "Updating existing but missing submodule"
             git submodule update --init --recursive "$path"
         fi
     fi
@@ -73,14 +72,14 @@ for name in $submodule_names; do
         pushd "$path" > /dev/null
         
         # Ensure we are on the correct branch
-        echo "Syncing $path with branch $branch..."
+        print_step "Syncing $path with branch $branch"
         git fetch origin
         git checkout "$branch" 2>/dev/null || git checkout -b "$branch" "origin/$branch"
         git pull origin "$branch"
         
         # Check for local changes to push
         if [[ -n $(git status -s) ]]; then
-            echo "Local changes detected in $path. Committing and pushing..."
+            print_step "Local changes detected in $path. Committing and pushing..."
             git add .
             git commit -m "Automated sync: $(date)"
             git push origin "$branch"
@@ -90,12 +89,11 @@ for name in $submodule_names; do
         
         popd > /dev/null
     else
-        echo "Error: Failed to ensure submodule at $path exists."
+        printf "%b[ERROR] Failed to ensure submodule at $path exists.\n" "$RED" "$NC"
     fi
 done
 
-echo "---------------------------------------------------"
-echo "Updating main repository..."
+print_step "Updating main repository"
 
 # 5. Stage updated submodule pointers
 git add .
