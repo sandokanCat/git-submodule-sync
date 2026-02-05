@@ -86,7 +86,7 @@ for name in $submodule_names; do
             git commit -m "Automated sync: $(date)"
             git push origin "$branch"
         else
-            echo "%b[WARN] No local changes in %b$path%b.\n" "$YELLOW" "$CYAN" "$YELLOW" "$NC"
+            echo "%b[WARN] No local changes in %b$path%b\n" "$YELLOW" "$CYAN" "$NC"
         fi
         
         popd > /dev/null
@@ -108,7 +108,7 @@ if [[ -n $(git status --porcelain) ]]; then
     print_step "Pushing main repository"
     git push origin "$(git branch --show-current)"
 else
-    printf "%b[WARN] No changes to commit in main repository.%b\n" "$YELLOW" "$NC"
+    printf "%b[WARN] No changes to commit in main repository%b\n" "$YELLOW" "$NC"
 fi
 
 # === SUMMARY ===
