@@ -117,10 +117,8 @@ sync_submodules() {
     git add .
 
     if [[ -n $(git status --porcelain) ]]; then
-        print_step "Committing changes in main repository"
+        print_step "Committing and Pushing changes in main repository"
         git commit -m "Automated submodule sync: $(date)"
-
-        print_step "Pushing main repository"
         git push origin "$(git branch --show-current)"
     else
         printf "%b[WARN] No changes to commit in main repository%b\n" "$YELLOW" "$NC"
@@ -135,6 +133,6 @@ if sync_submodules; then
 else
     # === SUMMARY ERROR ===
     print_step "Summary"
-    printf "%b[ERROR] Submodule synchronization failed.%b\n\n" "$B_RED" "$NC"
+    printf "%b[ERROR] Submodule synchronization failed.%b\n\n" "$RED" "$NC"
     exit 1
 fi
