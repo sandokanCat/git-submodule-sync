@@ -43,11 +43,13 @@ for name in $submodule_names; do
     path=$(git config -f .gitmodules --get "submodule.$name.path")
     url=$(git config -f .gitmodules --get "submodule.$name.url")
     branch=$(git config -f .gitmodules --get "submodule.$name.branch" || echo "main")
+    ignore=$(git config -f .gitmodules --get "submodule.$name.ignore" || echo "dirty")
 
     print_step "Processing submodule: $name"
     printf "Path:   %b$path%b\n" "$CYAN" "$NC"
     printf "URL:    %b$url%b\n" "$CYAN" "$NC"
     printf "Branch: %b$branch%b\n" "$CYAN" "$NC"
+    printf "Ignore: %b$ignore%b\n" "$CYAN" "$NC"
 
     # 3. Check if the submodule directory exists
     if [ ! -d "$path" ] || [ -z "$(ls -A "$path" 2>/dev/null)" ]; then
@@ -79,12 +81,12 @@ for name in $submodule_names; do
         
         # Check for local changes to push
         if [[ -n $(git status -s) ]]; then
-            print_step "Local changes detected in $path. Committing and pushing..."
+            print_step "Local changes detected in $path. Committing and pushing"
             git add .
             git commit -m "Automated sync: $(date)"
             git push origin "$branch"
         else
-            echo "No local changes in $path."
+            echo "%b[WARN] No local changes in %b$path%b.\n" "$YELLOW" "$CYAN" "$YELLOW" "$NC"
         fi
         
         popd > /dev/null
@@ -100,12 +102,13 @@ git add .
 
 # Commit if there are changes
 if [[ -n $(git status --porcelain) ]]; then
-    echo "Committing changes in main repository"
+    print_step "Committing changes in main repository"
     git commit -m "Automated submodule sync: $(date)"
-    echo "Pushing main repository"
+
+    print_step "Pushing main repository"
     git push origin "$(git branch --show-current)"
 else
-    echo "No changes to commit in main repository."
+    printf "%b[WARN] No changes to commit in main repository.%b\n" "$YELLOW" "$NC"
 fi
 
 # === SUMMARY ===
