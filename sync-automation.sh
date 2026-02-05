@@ -17,12 +17,11 @@ set -euo pipefail
 
 # === OUTPUT COLORS (Vivid/Bold Palette) ===
 # We use 1;3x codes to ensure colors are bright and bold consistently
-GREEN="\033[1;32m"
-YELLOW="\033[1;33m"
-RED="\033[1;31m"
-CYAN="\033[1;36m"
+GREEN="\033[0;32m"
+YELLOW="\033[0;33m"
+RED="\033[0;31m"
+CYAN="\033[0;36m"
 NC="\033[0m"
-BOLD="\033[1m"
 
 # === UTILITIES ===
 
@@ -53,10 +52,10 @@ sync_submodules() {
         ignore=$(git config -f .gitmodules --get "submodule.$name.ignore" || echo "none")
 
         print_step "Processing: ${CYAN}$name${NC}"
-        printf "${GREEN}Path:   ${BOLD}$path${NC}\n"
-        printf "${GREEN}URL:    ${BOLD}$url${NC}\n"
-        printf "${GREEN}Branch: ${BOLD}$branch${NC}\n"
-        printf "${GREEN}Ignore: ${BOLD}$ignore${NC}\n"
+        printf "${GREEN}Path:   $path${NC}\n"
+        printf "${GREEN}URL:    $url${NC}\n"
+        printf "${GREEN}Branch: $branch${NC}\n"
+        printf "${GREEN}Ignore: $ignore${NC}\n"
 
         # Logic for 'ignore = all'
         if [ "$ignore" == "all" ]; then
