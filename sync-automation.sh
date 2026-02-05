@@ -59,7 +59,7 @@ sync_submodules() {
         printf "Path:   %b$path%b\n" "$BOLD" "$NC"
         printf "URL:    %b$url%b\n" "$BOLD" "$NC"
         printf "Branch: %b$branch%b\n" "$BOLD" "$NC"
-        printf "Ignore: %b$ignore%b\n" "$BOLD" "$NC"
+        printf "Ignore: %b$ignore%b\n\n" "$BOLD" "$NC"
 
         # Logic for 'ignore = all'
         if [ "$ignore" == "all" ]; then
