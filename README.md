@@ -1,10 +1,14 @@
 # Git Submodule Sync Automation
 
-A professional shell script to automate the synchronization, initialization, and management of Git submodules with a high-intensity, expressive console interface.
+*A professional shell script to automate the synchronization, initialization, and management of Git submodules with a high-intensity, expressive console interface.*
+
+---
 
 ## 🚀 Overview
 
 [`sync-automation.sh`](./sync-automation.sh) is designed to streamline the workflow of projects using multiple submodules. It parses your [`.gitmodules`](./.gitmodules) file, ensures all modules are correctly initialized and downloaded, pulls the latest changes from their respective branches, and synchronizes everything with your main repository.
+
+---
 
 ## ✨ Key Features
 
@@ -14,6 +18,8 @@ A professional shell script to automate the synchronization, initialization, and
 - **Robust Error Handling**: Wraps the entire synchronization process in a fail-safe block with definitive success (`[DONE]`) or failure (`[ERROR]`) reporting.
 - **Auto-Committing**: Optionally commits and pushes local changes within submodules to keep dependencies up to date.
 
+---
+
 ## 🛠️ Installation
 
 1. Clone this repository or copy [`sync-automation.sh`](./sync-automation.sh) to your project root.
@@ -22,6 +28,8 @@ A professional shell script to automate the synchronization, initialization, and
    ```bash
    chmod +x sync-automation.sh
    ```
+
+---
 
 ## 📋 Configuration
 
@@ -41,6 +49,8 @@ The script reads the standard [`.gitmodules`](./.gitmodules) file. You can contr
 - **`dirty`**: Pulls remote changes but ignores local modifications (won't auto-commit).
 - **`all`**: Completely skips the submodule during the synchronization process.
 
+---
+
 ## ⚡ Usage
 
 Simply run the script from the root of your Git repository:
@@ -57,14 +67,30 @@ The script will:
 4. Handle local changes according to your `ignore` settings.
 5. Update the submodule pointers in your main repository and push them.
 
-## 📄 License
+---
 
-MIT © 2026 [sandokan.cat](https://sandokan.cat)
+## 🤝 Contributing
+
+[Contributions are welcome!](./CONTRIBUTING.md)
+Keep code **modular, readable, and tested**.
+Pull requests should include a clear description and working example.
+
+---
+
+## 📝 License
+
+MIT © 2025 [sandokan.cat](https://sandokan.cat)
 
 > *Use it. Modify it. Share it. Attribution is appreciated.*
 
 <div align="center">
-    <a href="https://opensource.org/licenses/MIT">
+    <a href="./LICENSE">
         <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License">
     </a>
 </div>
+
+---
+
+## ⚠️ Disclaimer
+
+All tools and utilities in this repo are provided "as is", without warranties. Use at your own risk. Intended for **personal**, **educational**, and **professional** use.
