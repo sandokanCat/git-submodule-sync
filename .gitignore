@@ -1,0 +1,8 @@
+# BLOCKED
+_*
+.*
+
+# ALLOWED
+!.github/
+!.gitignore
+!.gitmodules
