@@ -5,7 +5,7 @@
 #
 # Author:  © 2026 sandokan.cat – https://sandokan.cat
 # License: MIT – https://opensource.org/licenses/MIT
-# Version: 1.3.0
+# Version: 1.3.1
 # Date:    2026-02-05
 #
 # Description:
@@ -37,7 +37,7 @@ print_step() {
 
 # 1. Ensure we are in a git repository
 if [ ! -d .git ]; then
-    printf "%b[ERROR] Not a git repository.\n" "$B_RED" "$NC"
+    printf "${B_RED}[ERROR] Not a git repository.${NC}\n"
     exit 1
 fi
 
@@ -63,13 +63,13 @@ sync_submodules() {
 
         # Logic for 'ignore = all'
         if [ "$ignore" == "all" ]; then
-            printf "%b[SKIP] Submodule %b$name%b is ignore=%b$ignore%b\n" "$YELLOW" "$B_YELLOW" "$YELLOW" "$B_YELLOW" "$NC"
+            printf "${YELLOW}[SKIP] Submodule ${B_YELLOW}$name${YELLOW} is ignore=${B_YELLOW}$ignore${NC}\n"
             continue
         fi
 
         # 3. Check if the submodule directory exists
         if [ ! -d "$path" ] || [ -z "$(ls -A "$path" 2>/dev/null)" ]; then
-            printf "%b[WARN] Submodule path %b$path%b is missing or empty. Adding/initializing%b\n" "$YELLOW" "$B_YELLOW" "$YELLOW" "$NC"
+            printf "${YELLOW}[WARN] Submodule path ${B_YELLOW}$path${YELLOW} is missing or empty. Adding/initializing${NC}\n"
             
             # Ensure parent directory exists
             mkdir -p "$(dirname "$path")"
@@ -97,7 +97,7 @@ sync_submodules() {
 
             if [[ -n "$has_changes" ]]; then
                 if [ "$ignore" == "dirty" ]; then
-                    printf "%b[WARN] Untracked/modified changes in %b$path%b ignored%b\n" "$YELLOW" "$B_YELLOW" "$YELLOW" "$NC"
+                    printf "${YELLOW}[WARN] Untracked/modified changes in ${B_YELLOW}$path${YELLOW} ignored${NC}\n"
                 else
                     print_step "Local changes detected in ${B_CYAN}$path${NC}. Committing and pushing"
                     git add .
@@ -105,12 +105,12 @@ sync_submodules() {
                     git push origin "$branch"
                 fi
             else
-                printf "%b[WARN] No local changes in %b$path%b\n" "$YELLOW" "$B_YELLOW" "$NC"
+                printf "${YELLOW}[WARN] No local changes in ${B_YELLOW}$path${NC}\n"
             fi
             
             popd > /dev/null
         else
-            printf "%b[ERROR] Failed to ensure submodule at %b$path%b exists.%b\n" "$RED" "$B_RED" "$RED" "$NC"
+            printf "${RED}[ERROR] Failed to ensure submodule at ${B_RED}$path${RED} exists.${NC}\n"
             return 1
         fi
     done
@@ -122,7 +122,7 @@ sync_submodules() {
         git commit -m "Automated submodule sync: $(date)"
         git push origin "$(git branch --show-current)"
     else
-        printf "%b[WARN] No changes to commit in main repository%b\n" "$YELLOW" "$NC"
+        printf "${YELLOW}[WARN] No changes to commit in main repository${NC}\n"
     fi
 }
 
@@ -130,10 +130,10 @@ sync_submodules() {
 if sync_submodules; then
     # === SUMMARY SUCCESS ===
     print_step "Summary"
-    printf "%b[DONE] All repositories are updated.%b\n\n" "$GREEN" "$NC"
+    printf "${GREEN}[DONE] All repositories are updated.${NC}\n\n"
 else
     # === SUMMARY ERROR ===
     print_step "Summary"
-    printf "%b[ERROR] Submodule synchronization failed.%b\n\n" "$RED" "$NC"
+    printf "${RED}[ERROR] Submodule synchronization failed.${NC}\n\n"
     exit 1
 fi
