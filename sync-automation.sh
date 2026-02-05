@@ -1,68 +1,81 @@
 #!/bin/bash
 
 # Submodule Sync Automation Script
-# This script parses .gitmodules, updates submodules, and pushes changes.
+# This script parses .gitmodules, ensures submodules exist, updates them, and pushes changes.
 
 set -e
 
-# 1. Initialize and update submodules to ensure they are present
-echo "Initializing and updating submodules..."
-git submodule update --init --recursive
+# 1. Ensure we are in a git repository
+if [ ! -d .git ]; then
+    echo "Error: Not a git repository."
+    exit 1
+fi
 
-# 2. Parse .gitmodules to get paths and branches
-# We look for lines containing 'path =' or 'branch ='
-echo "Parsing .gitmodules..."
+# 2. Robustly parse .gitmodules using git config
+echo "Parsing .gitmodules and ensuring submodules are initialized..."
 
-# Arrays to store paths and branches
-paths=()
-branches=()
+# Get all submodule names
+submodule_names=$(git config -f .gitmodules --get-regexp '^submodule\..*\.path$' | awk '{print $1}' | sed 's/^submodule\.//;s/\.path$//')
 
-while IFS= read -r line; do
-    if [[ $line =~ path\ =\ (.*) ]]; then
-        paths+=("${BASH_REMATCH[1]}")
-    elif [[ $line =~ branch\ =\ (.*) ]]; then
-        branches+=("${BASH_REMATCH[1]}")
-    fi
-done < .gitmodules
+for name in $submodule_names; do
+    path=$(git config -f .gitmodules --get "submodule.$name.path")
+    url=$(git config -f .gitmodules --get "submodule.$name.url")
+    branch=$(git config -f .gitmodules --get "submodule.$name.branch" || echo "main")
 
-# Note: This simple parser assumes each submodule has a path and ideally a branch.
-# If branch is missing, we'll default to 'main'.
-
-for i in "${!paths[@]}"; do
-    sub_path="${paths[$i]}"
-    sub_branch="${branches[$i]:-main}"
-    
     echo "---------------------------------------------------"
-    echo "Processing submodule: $sub_path (branch: $sub_branch)"
-    
-    if [ -d "$sub_path" ]; then
-        pushd "$sub_path" > /dev/null
+    echo "Processing submodule: $name"
+    echo "Path:   $path"
+    echo "URL:    $url"
+    echo "Branch: $branch"
+
+    # 3. Check if the submodule directory exists
+    if [ ! -d "$path" ] || [ -z "$(ls -A "$path" 2>/dev/null)" ]; then
+        echo "Submodule path '$path' is missing or empty. Adding/initializing..."
         
-        # Pull latest changes
-        echo "Pulling latest changes in $sub_path..."
-        git checkout "$sub_branch"
-        git pull origin "$sub_branch"
+        # Ensure parent directory exists
+        mkdir -p "$(dirname "$path")"
+        
+        # Try to add the submodule (in case it's not in the index)
+        # If it's already in the index but missing on disk, 'git submodule update --init' handles it.
+        if ! git submodule status "$path" >/dev/null 2>&1; then
+             echo "Registering and cloning new submodule..."
+             git submodule add -b "$branch" --force "$url" "$path"
+        else
+             echo "Updating existing but missing submodule..."
+             git submodule update --init --recursive "$path"
+        fi
+    fi
+
+    # 4. Sync logic
+    if [ -d "$path" ]; then
+        pushd "$path" > /dev/null
+        
+        # Ensure we are on the correct branch
+        echo "Syncing $path with branch $branch..."
+        git fetch origin
+        git checkout "$branch" 2>/dev/null || git checkout -b "$branch" "origin/$branch"
+        git pull origin "$branch"
         
         # Check for local changes to push
         if [[ -n $(git status -s) ]]; then
-            echo "Local changes detected in $sub_path. Committing and pushing..."
+            echo "Local changes detected in $path. Committing and pushing..."
             git add .
             git commit -m "Automated sync: $(date)"
-            git push origin "$sub_branch"
+            git push origin "$branch"
         else
-            echo "No local changes in $sub_path."
+            echo "No local changes in $path."
         fi
         
         popd > /dev/null
     else
-        echo "Warning: Submodule path $sub_path does not exist."
+        echo "Error: Failed to ensure submodule at $path exists."
     fi
 done
 
 echo "---------------------------------------------------"
 echo "Updating main repository..."
 
-# Stage updated submodule pointers
+# 5. Stage updated submodule pointers
 git add .
 
 # Commit if there are changes

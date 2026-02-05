@@ -17,3 +17,15 @@
     url = https://github.com/sandokanCat/open-utils
     branch = main
     ignore = none
+[submodule "examples/python-hash-audit"]
+	path = examples/python-hash-audit
+	url = https://github.com/sandokanCat/python-hash-audit
+	branch = main
+[submodule "examples/document-integrity-tools"]
+	path = examples/document-integrity-tools
+	url = https://github.com/sandokanCat/document-integrity-tools
+	branch = main
+[submodule "examples/open-utils"]
+	path = examples/open-utils
+	url = https://github.com/sandokanCat/open-utils
+	branch = main
