@@ -4,13 +4,13 @@
     path = examples/python-hash-audit
     url = https://github.com/sandokanCat/python-hash-audit
     branch = main
-    ignore = none
+    ignore = all
 
 [submodule "document-integrity-tools"]
     path = examples/document-integrity-tools
     url = https://github.com/sandokanCat/document-integrity-tools
     branch = main
-    ignore = none
+    ignore = dirty
 
 [submodule "open-utils"]
     path = examples/open-utils
