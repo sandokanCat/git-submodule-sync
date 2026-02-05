@@ -34,7 +34,7 @@ if [ ! -d .git ]; then
 fi
 
 # 2. Robustly parse .gitmodules using git config
-echo "Parsing .gitmodules and ensuring submodules are initialized..."
+print_step "Parsing .gitmodules and ensuring submodules are initialized"
 
 # Get all submodule names
 submodule_names=$(git config -f .gitmodules --get-regexp '^submodule\..*\.path$' | awk '{print $1}' | sed 's/^submodule\.//;s/\.path$//')
@@ -53,7 +53,7 @@ for name in $submodule_names; do
 
     # 3. Check if the submodule directory exists
     if [ ! -d "$path" ] || [ -z "$(ls -A "$path" 2>/dev/null)" ]; then
-        echo "Submodule path '$path' is missing or empty. Adding/initializing"
+        printf "%b[WARN] Submodule path '$path' is missing or empty. Adding/initializing%b\n" "$YELLOW" "$NC"
         
         # Ensure parent directory exists
         mkdir -p "$(dirname "$path")"
@@ -86,7 +86,7 @@ for name in $submodule_names; do
             git commit -m "Automated sync: $(date)"
             git push origin "$branch"
         else
-            echo "%b[WARN] No local changes in %b$path%b\n" "$YELLOW" "$CYAN" "$NC"
+            printf "%b[WARN] No local changes in %b$path%b\n" "$YELLOW" "$CYAN" "$NC"
         fi
         
         popd > /dev/null
