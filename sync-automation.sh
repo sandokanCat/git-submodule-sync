@@ -5,11 +5,12 @@
 #
 # Author:  © 2026 sandokan.cat – https://sandokan.cat
 # License: MIT – https://opensource.org/licenses/MIT
-# Version: 1.2.0
+# Version: 1.3.0
 # Date:    2026-02-05
 #
 # Description:
 # This script parses .gitmodules, ensures submodules exist, updates them, and pushes changes.
+# It respects the 'ignore' setting for each submodule (all, dirty, none).
 #
 
 set -euo pipefail
@@ -29,6 +30,12 @@ print_step() {
 
 # === MAIN LOGIC ===
 
+# 1. Ensure we are in a git repository
+if [ ! -d .git ]; then
+    printf "%b[ERROR] Not a git repository.\n" "$RED" "$NC"
+    exit 1
+fi
+
 sync_submodules() {
     # 2. Robustly parse .gitmodules using git config
     print_step "Parsing .gitmodules and ensuring submodules are initialized"
@@ -42,13 +49,19 @@ sync_submodules() {
         path=$(git config -f .gitmodules --get "submodule.$name.path")
         url=$(git config -f .gitmodules --get "submodule.$name.url")
         branch=$(git config -f .gitmodules --get "submodule.$name.branch" || echo "main")
-        ignore=$(git config -f .gitmodules --get "submodule.$name.ignore" || echo "dirty")
+        ignore=$(git config -f .gitmodules --get "submodule.$name.ignore" || echo "none")
 
         print_step "Processing submodule: $name"
         printf "Path:   %b$path%b\n" "$CYAN" "$NC"
         printf "URL:    %b$url%b\n" "$CYAN" "$NC"
         printf "Branch: %b$branch%b\n" "$CYAN" "$NC"
         printf "Ignore: %b$ignore%b\n" "$CYAN" "$NC"
+
+        # Logic for 'ignore = all'
+        if [ "$ignore" == "all" ]; then
+            printf "%b[INFO] Skipping submodule '$name' (ignore = all)%b\n" "$YELLOW" "$NC"
+            continue
+        fi
 
         # 3. Check if the submodule directory exists
         if [ ! -d "$path" ] || [ -z "$(ls -A "$path" 2>/dev/null)" ]; then
@@ -75,11 +88,19 @@ sync_submodules() {
             git checkout "$branch" 2>/dev/null || git checkout -b "$branch" "origin/$branch"
             git pull origin "$branch"
             
-            if [[ -n $(git status -s) ]]; then
-                print_step "Local changes detected in $path. Committing and pushing"
-                git add .
-                git commit -m "Automated sync: $(date)"
-                git push origin "$branch"
+            # Check for local changes to push
+            local has_changes
+            has_changes=$(git status -s)
+
+            if [[ -n "$has_changes" ]]; then
+                if [ "$ignore" == "dirty" ]; then
+                    printf "%b[WARN] Untracked/modified changes in %b$path%b ignored (ignore = dirty)%b\n" "$YELLOW" "$CYAN" "$NC" "$NC"
+                else
+                    print_step "Local changes detected in $path. Committing and pushing"
+                    git add .
+                    git commit -m "Automated sync: $(date)"
+                    git push origin "$branch"
+                fi
             else
                 printf "%b[WARN] No local changes in %b$path%b\n" "$YELLOW" "$CYAN" "$NC"
             fi
@@ -104,12 +125,6 @@ sync_submodules() {
         printf "%b[WARN] No changes to commit in main repository%b\n" "$YELLOW" "$NC"
     fi
 }
-
-# 1. Ensure we are in a git repository
-if [ ! -d .git ]; then
-    printf "%b[ERROR] Not a git repository.\n" "$RED" "$NC"
-    exit 1
-fi
 
 # EXECUTION WITH ERROR HANDLING (Try/Catch)
 if sync_submodules; then
