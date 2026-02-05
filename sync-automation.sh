@@ -130,7 +130,7 @@ sync_submodules() {
         git push origin "$(git branch --show-current)"
     else
         print_step "Committing and Pushing changes in $REPO_NAME"
-        printf "${YELLOW}[WARN] No changes to commit in ${B_CYAN}$REPO_NAME${NC}\n"
+        printf "${YELLOW}[WARN] No changes to commit in ${B_YELLOW}$REPO_NAME${NC}\n"
     fi
 }
 
