@@ -89,7 +89,7 @@ for name in $submodule_names; do
         
         popd > /dev/null
     else
-        printf "%b[ERROR] Failed to ensure submodule at $path exists.\n" "$RED" "$NC"
+        printf "%b[ERROR] Failed to ensure submodule at %b$path%b exists.%b\n" "$RED" "$CYAN" "$RED" "$NC"
     fi
 done
 
@@ -110,4 +110,4 @@ fi
 
 # === SUMMARY ===
 print_step "Summary"
-printf "%b[DONE] All repositories are updated.%b\n" "$GREEN" "$NC"
+printf "%b[DONE] All repositories are updated.%b\n\n" "$GREEN" "$NC"
