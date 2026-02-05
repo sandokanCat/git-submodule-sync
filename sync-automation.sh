@@ -38,7 +38,6 @@ fi
 
 sync_submodules() {
     # 2. Robustly parse .gitmodules using git config
-    print_step "Parsing .gitmodules and ensuring submodules are initialized"
 
     # Get all submodule names
     local submodule_names
@@ -112,7 +111,6 @@ sync_submodules() {
         fi
     done
 
-    print_step "Updating main repository"
     git add .
 
     if [[ -n $(git status --porcelain) ]]; then
