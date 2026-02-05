@@ -1,9 +1,31 @@
 #!/bin/bash
 
-# Submodule Sync Automation Script
+#
+# sync-automation.sh – SUBMODULE SYNC AUTOMATION
+#
+# Author:  © 2026 sandokan.cat – https://sandokan.cat
+# License: MIT – https://opensource.org/licenses/MIT
+# Version: 1.1.0
+# Date:    2026-02-05
+#
+# Description:
 # This script parses .gitmodules, ensures submodules exist, updates them, and pushes changes.
+#
 
-set -e
+set -euo pipefail
+
+# === OUTPUT COLORS ===
+GREEN="\033[0;32m"
+YELLOW="\033[1;33m"
+RED="\033[0;31m"
+CYAN="\033[0;36m"
+NC="\033[0m"
+
+# === UTILITIES ===
+
+print_step() {
+    printf "\n=== %s ===\n" "$1"
+}
 
 # 1. Ensure we are in a git repository
 if [ ! -d .git ]; then
@@ -38,11 +60,11 @@ for name in $submodule_names; do
         # Try to add the submodule (in case it's not in the index)
         # If it's already in the index but missing on disk, 'git submodule update --init' handles it.
         if ! git submodule status "$path" >/dev/null 2>&1; then
-             echo "Registering and cloning new submodule..."
-             git submodule add -b "$branch" --force "$url" "$path"
+            echo "Registering and cloning new submodule..."
+            git submodule add -b "$branch" --force "$url" "$path"
         else
-             echo "Updating existing but missing submodule..."
-             git submodule update --init --recursive "$path"
+            echo "Updating existing but missing submodule..."
+            git submodule update --init --recursive "$path"
         fi
     fi
 
@@ -88,4 +110,6 @@ else
     echo "No changes to commit in main repository."
 fi
 
-echo "Done!"
+# === SUMMARY ===
+print_step "Summary"
+printf "%b[DONE] All repositories are updated.\n" "$GREEN" "$NC"
