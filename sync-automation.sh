@@ -56,10 +56,10 @@ sync_submodules() {
         ignore=$(git config -f .gitmodules --get "submodule.$name.ignore" || echo "none")
 
         print_step "Processing: ${B_CYAN}$name${NC}"
-        printf "Path:   %b$path%b\n" "$BOLD" "$NC"
-        printf "URL:    %b$url%b\n" "$BOLD" "$NC"
-        printf "Branch: %b$branch%b\n" "$BOLD" "$NC"
-        printf "Ignore: %b$ignore%b\n\n" "$BOLD" "$NC"
+        printf "${GREEN}Path:${NC}   ${B_GREEN}$path${NC}\n"
+        printf "${GREEN}URL:${NC}    ${B_GREEN}$url${NC}\n"
+        printf "${GREEN}Branch:${NC} ${B_GREEN}$branch${NC}\n"
+        printf "${GREEN}Ignore:${NC} ${B_GREEN}$ignore${NC}\n"
 
         # Logic for 'ignore = all'
         if [ "$ignore" == "all" ]; then
