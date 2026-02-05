@@ -21,11 +21,12 @@ YELLOW="\033[1;33m"
 RED="\033[0;31m"
 CYAN="\033[0;36m"
 NC="\033[0m"
+BOLD="\033[1m"
 
 # === UTILITIES ===
 
 print_step() {
-    printf "\n=== %s ===\n" "$1"
+    printf "\n%b=== %s ===%b\n" "$CYAN" "$1" "$NC"
 }
 
 # === MAIN LOGIC ===
@@ -51,20 +52,20 @@ sync_submodules() {
         ignore=$(git config -f .gitmodules --get "submodule.$name.ignore" || echo "none")
 
         print_step "Processing submodule: $name"
-        printf "Path:   %b$path%b\n" "$CYAN" "$NC"
-        printf "URL:    %b$url%b\n" "$CYAN" "$NC"
-        printf "Branch: %b$branch%b\n" "$CYAN" "$NC"
-        printf "Ignore: %b$ignore%b\n" "$CYAN" "$NC"
+        printf "Path:   %b$path%b\n" "$BOLD" "$NC"
+        printf "URL:    %b$url%b\n" "$BOLD" "$NC"
+        printf "Branch: %b$branch%b\n" "$BOLD" "$NC"
+        printf "Ignore: %b$ignore%b\n" "$BOLD" "$NC"
 
         # Logic for 'ignore = all'
         if [ "$ignore" == "all" ]; then
-            printf "%b[INFO] Skipping submodule '$name' (ignore = all)%b\n" "$YELLOW" "$NC"
+            printf "%b[INFO] Skipping submodule '$name'%b\n" "$YELLOW" "$NC"
             continue
         fi
 
         # 3. Check if the submodule directory exists
         if [ ! -d "$path" ] || [ -z "$(ls -A "$path" 2>/dev/null)" ]; then
-            printf "%b[WARN] Submodule path '$path' is missing or empty. Adding/initializing%b\n" "$YELLOW" "$NC"
+            printf "%b[WARN] Submodule path %b$path%b is missing or empty. Adding/initializing%b\n" "$YELLOW" "$BOLD" "$NC"
             
             # Ensure parent directory exists
             mkdir -p "$(dirname "$path")"
@@ -93,20 +94,20 @@ sync_submodules() {
 
             if [[ -n "$has_changes" ]]; then
                 if [ "$ignore" == "dirty" ]; then
-                    printf "%b[WARN] Untracked/modified changes in %b$path%b ignored (ignore = dirty)%b\n" "$YELLOW" "$CYAN" "$NC" "$NC"
+                    printf "%b[WARN] Untracked/modified changes in %b$path%b ignored%b\n" "$YELLOW" "$BOLD" "$NC"
                 else
-                    print_step "Local changes detected in $path. Committing and pushing"
+                    print_step "Local changes detected in %b$path%b. Committing and pushing" "$CYAN" "$NC"
                     git add .
                     git commit -m "Automated sync: $(date)"
                     git push origin "$branch"
                 fi
             else
-                printf "%b[WARN] No local changes in %b$path%b\n" "$YELLOW" "$CYAN" "$NC"
+                printf "%b[WARN] No local changes in %b$path%b\n" "$YELLOW" "$BOLD" "$NC"
             fi
             
             popd > /dev/null
         else
-            printf "%b[ERROR] Failed to ensure submodule at %b$path%b exists.%b\n" "$RED" "$CYAN" "$RED" "$NC"
+            printf "%b[ERROR] Failed to ensure submodule at %b$path%b exists.%b\n" "$RED" "$BOLD" "$NC" "$RED" "$NC"
             return 1
         fi
     done
