@@ -59,7 +59,7 @@ sync_submodules() {
 
         # Logic for 'ignore = all'
         if [ "$ignore" == "all" ]; then
-            printf "%b[INFO] Skipping submodule '$name'%b\n" "$YELLOW" "$NC"
+            printf "%b[SKIP] Submodule %b$name%b is ignored=%b$ignore%b\n" "$YELLOW" "$BOLD" "$YELLOW" "$NC"
             continue
         fi
 
@@ -83,7 +83,7 @@ sync_submodules() {
         if [ -d "$path" ]; then
             pushd "$path" > /dev/null
             
-            print_step "Syncing $path with branch $branch"
+            print_step "Syncing %b$path%b with branch %b$branch%b" "$BOLD" "$NC"
             git fetch origin
             git checkout "$branch" 2>/dev/null || git checkout -b "$branch" "origin/$branch"
             git pull origin "$branch"
@@ -96,7 +96,7 @@ sync_submodules() {
                 if [ "$ignore" == "dirty" ]; then
                     printf "%b[WARN] Untracked/modified changes in %b$path%b ignored%b\n" "$YELLOW" "$BOLD" "$NC"
                 else
-                    print_step "Local changes detected in %b$path%b. Committing and pushing" "$CYAN" "$NC"
+                    print_step "Local changes detected in %b$path%b. Committing and pushing" "$BOLD" "$NC"
                     git add .
                     git commit -m "Automated sync: $(date)"
                     git push origin "$branch"
