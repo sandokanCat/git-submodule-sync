@@ -63,7 +63,7 @@ sync_submodules() {
 
         # Logic for 'ignore = all'
         if [ "$ignore" == "all" ]; then
-            printf "%b[SKIP] Submodule %b$name%b is ignored=%b$ignore%b\n" "$YELLOW" "$B_YELLOW" "$YELLOW" "$B_YELLOW" "$NC"
+            printf "%b[SKIP] Submodule %b$name%b is ignore=%b$ignore%b\n" "$YELLOW" "$B_YELLOW" "$YELLOW" "$B_YELLOW" "$NC"
             continue
         fi
 
@@ -133,7 +133,7 @@ sync_submodules() {
 if sync_submodules; then
     # === SUMMARY SUCCESS ===
     print_step "Summary"
-    printf "%b[DONE] All repositories are updated.%b\n\n" "$B_GREEN" "$NC"
+    printf "%b[DONE] All repositories are updated.%b\n\n" "$GREEN" "$NC"
 else
     # === SUMMARY ERROR ===
     print_step "Summary"
