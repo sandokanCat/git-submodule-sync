@@ -97,7 +97,7 @@ sync_submodules() {
 
             if [[ -n "$has_changes" ]]; then
                 if [ "$ignore" == "dirty" ]; then
-                    printf "${YELLOW}[WARN] Untracked/modified changes in ${B_YELLOW}$path${YELLOW} ignored${NC}\n"
+                    printf "${YELLOW}[WARN] Untracked/modified changes in ${B_YELLOW}$path${YELLOW} ignore=${B_YELLOW}$ignore${NC}\n"
                 else
                     print_step "Local changes detected in ${B_CYAN}$path${NC}. Committing and pushing"
                     git add .
@@ -122,6 +122,7 @@ sync_submodules() {
         git commit -m "Automated submodule sync: $(date)"
         git push origin "$(git branch --show-current)"
     else
+        print_step "Committing and Pushing changes in main repository"
         printf "${YELLOW}[WARN] No changes to commit in main repository${NC}\n"
     fi
 }
@@ -130,10 +131,10 @@ sync_submodules() {
 if sync_submodules; then
     # === SUMMARY SUCCESS ===
     print_step "Summary"
-    printf "${GREEN}[DONE] All repositories are updated.${NC}\n\n"
+    printf "${B_GREEN}[DONE] All repositories are updated.${NC}\n\n"
 else
     # === SUMMARY ERROR ===
     print_step "Summary"
-    printf "${RED}[ERROR] Submodule synchronization failed.${NC}\n\n"
+    printf "${B_RED}[ERROR] Submodule synchronization failed.${NC}\n\n"
     exit 1
 fi
