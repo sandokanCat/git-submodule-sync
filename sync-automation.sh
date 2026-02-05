@@ -45,9 +45,9 @@ for name in $submodule_names; do
     branch=$(git config -f .gitmodules --get "submodule.$name.branch" || echo "main")
 
     print_step "Processing submodule: $name"
-    printf "Path:   $path\n"
-    printf "URL:    $url\n"
-    printf "Branch: $branch\n"
+    printf "Path:   %b$path%b\n" "$CYAN" "$NC"
+    printf "URL:    %b$url%b\n" "$CYAN" "$NC"
+    printf "Branch: %b$branch%b\n" "$CYAN" "$NC"
 
     # 3. Check if the submodule directory exists
     if [ ! -d "$path" ] || [ -z "$(ls -A "$path" 2>/dev/null)" ]; then
@@ -100,9 +100,9 @@ git add .
 
 # Commit if there are changes
 if [[ -n $(git status --porcelain) ]]; then
-    echo "Committing changes in main repository..."
+    echo "Committing changes in main repository"
     git commit -m "Automated submodule sync: $(date)"
-    echo "Pushing main repository..."
+    echo "Pushing main repository"
     git push origin "$(git branch --show-current)"
 else
     echo "No changes to commit in main repository."
@@ -110,4 +110,4 @@ fi
 
 # === SUMMARY ===
 print_step "Summary"
-printf "%b[DONE] All repositories are updated.\n" "$GREEN" "$NC"
+printf "%b[DONE] All repositories are updated.%b\n" "$GREEN" "$NC"
