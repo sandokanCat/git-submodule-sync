@@ -55,10 +55,9 @@ sync_submodules() {
         branch=$(git config -f .gitmodules --get "submodule.$name.branch" || echo "main")
         ignore=$(git config -f .gitmodules --get "submodule.$name.ignore" || echo "none")
 
-        print_step "Processing submodule: ${B_CYAN}$name${NC}"
+        print_step "Processing: ${B_CYAN}$name${NC} (${B_CYAN}$branch${NC})"
         printf "Path:   %b$path%b\n" "$BOLD" "$NC"
         printf "URL:    %b$url%b\n" "$BOLD" "$NC"
-        printf "Branch: %b$branch%b\n" "$BOLD" "$NC"
         printf "Ignore: %b$ignore%b\n" "$BOLD" "$NC"
 
         # Logic for 'ignore = all'
@@ -87,10 +86,9 @@ sync_submodules() {
         if [ -d "$path" ]; then
             pushd "$path" > /dev/null
             
-            print_step "Syncing ${B_CYAN}$path${NC} with branch ${B_CYAN}$branch${NC}"
-            git fetch origin
+            git fetch origin --quiet
             git checkout "$branch" 2>/dev/null || git checkout -b "$branch" "origin/$branch"
-            git pull origin "$branch"
+            git pull origin "$branch" --quiet
             
             # Check for local changes to push
             local has_changes
