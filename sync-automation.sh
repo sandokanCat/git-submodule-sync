@@ -17,23 +17,27 @@ set -euo pipefail
 
 # === OUTPUT COLORS ===
 GREEN="\033[0;32m"
-YELLOW="\033[1;33m"
+YELLOW="\033[0;33m"
 RED="\033[0;31m"
 CYAN="\033[0;36m"
-NC="\033[0m"
 BOLD="\033[1m"
+B_GREEN="\033[1;32m"
+B_YELLOW="\033[1;33m"
+B_RED="\033[1;31m"
+B_CYAN="\033[1;36m"
+NC="\033[0m"
 
 # === UTILITIES ===
 
 print_step() {
-    printf "\n%b=== %s ===%b\n" "$CYAN" "$1" "$NC"
+    printf "\n${CYAN}=== %b ===${NC}\n" "$*"
 }
 
 # === MAIN LOGIC ===
 
 # 1. Ensure we are in a git repository
 if [ ! -d .git ]; then
-    printf "%b[ERROR] Not a git repository.\n" "$RED" "$NC"
+    printf "%b[ERROR] Not a git repository.\n" "$B_RED" "$NC"
     exit 1
 fi
 
@@ -51,7 +55,7 @@ sync_submodules() {
         branch=$(git config -f .gitmodules --get "submodule.$name.branch" || echo "main")
         ignore=$(git config -f .gitmodules --get "submodule.$name.ignore" || echo "none")
 
-        print_step "Processing submodule: $name"
+        print_step "Processing submodule: ${B_CYAN}$name${NC}"
         printf "Path:   %b$path%b\n" "$BOLD" "$NC"
         printf "URL:    %b$url%b\n" "$BOLD" "$NC"
         printf "Branch: %b$branch%b\n" "$BOLD" "$NC"
@@ -59,13 +63,13 @@ sync_submodules() {
 
         # Logic for 'ignore = all'
         if [ "$ignore" == "all" ]; then
-            printf "%b[SKIP] Submodule %b$name%b is ignored=%b$ignore%b\n" "$YELLOW" "$BOLD" "$YELLOW" "$NC"
+            printf "%b[SKIP] Submodule %b$name%b is ignored=%b$ignore%b\n" "$YELLOW" "$B_YELLOW" "$YELLOW" "$B_YELLOW" "$NC"
             continue
         fi
 
         # 3. Check if the submodule directory exists
         if [ ! -d "$path" ] || [ -z "$(ls -A "$path" 2>/dev/null)" ]; then
-            printf "%b[WARN] Submodule path %b$path%b is missing or empty. Adding/initializing%b\n" "$YELLOW" "$BOLD" "$NC"
+            printf "%b[WARN] Submodule path %b$path%b is missing or empty. Adding/initializing%b\n" "$YELLOW" "$B_YELLOW" "$YELLOW" "$NC"
             
             # Ensure parent directory exists
             mkdir -p "$(dirname "$path")"
@@ -83,7 +87,7 @@ sync_submodules() {
         if [ -d "$path" ]; then
             pushd "$path" > /dev/null
             
-            print_step "Syncing %b$path%b with branch %b$branch%b" "$BOLD" "$NC"
+            print_step "Syncing ${B_CYAN}$path${NC} with branch ${B_CYAN}$branch${NC}"
             git fetch origin
             git checkout "$branch" 2>/dev/null || git checkout -b "$branch" "origin/$branch"
             git pull origin "$branch"
@@ -94,20 +98,20 @@ sync_submodules() {
 
             if [[ -n "$has_changes" ]]; then
                 if [ "$ignore" == "dirty" ]; then
-                    printf "%b[WARN] Untracked/modified changes in %b$path%b ignored%b\n" "$YELLOW" "$BOLD" "$NC"
+                    printf "%b[WARN] Untracked/modified changes in %b$path%b ignored%b\n" "$YELLOW" "$B_YELLOW" "$YELLOW" "$NC"
                 else
-                    print_step "Local changes detected in %b$path%b. Committing and pushing" "$BOLD" "$NC"
+                    print_step "Local changes detected in ${B_CYAN}$path${NC}. Committing and pushing"
                     git add .
                     git commit -m "Automated sync: $(date)"
                     git push origin "$branch"
                 fi
             else
-                printf "%b[WARN] No local changes in %b$path%b\n" "$YELLOW" "$BOLD" "$NC"
+                printf "%b[WARN] No local changes in %b$path%b\n" "$YELLOW" "$B_YELLOW" "$NC"
             fi
             
             popd > /dev/null
         else
-            printf "%b[ERROR] Failed to ensure submodule at %b$path%b exists.%b\n" "$RED" "$BOLD" "$NC" "$RED" "$NC"
+            printf "%b[ERROR] Failed to ensure submodule at %b$path%b exists.%b\n" "$RED" "$B_RED" "$RED" "$NC"
             return 1
         fi
     done
@@ -129,10 +133,10 @@ sync_submodules() {
 if sync_submodules; then
     # === SUMMARY SUCCESS ===
     print_step "Summary"
-    printf "%b[DONE] All repositories are updated.%b\n\n" "$GREEN" "$NC"
+    printf "%b[DONE] All repositories are updated.%b\n\n" "$B_GREEN" "$NC"
 else
     # === SUMMARY ERROR ===
     print_step "Summary"
-    printf "%b[ERROR] Submodule synchronization failed.%b\n\n" "$RED" "$NC"
+    printf "%b[ERROR] Submodule synchronization failed.%b\n\n" "$B_RED" "$NC"
     exit 1
 fi
