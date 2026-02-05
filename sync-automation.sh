@@ -5,7 +5,7 @@
 #
 # Author:  © 2026 sandokan.cat – https://sandokan.cat
 # License: MIT – https://opensource.org/licenses/MIT
-# Version: 1.3.3
+# Version: 1.3.4
 # Date:    2026-02-05
 #
 # Description:
@@ -23,6 +23,7 @@ YELLOW="\033[0;33m"
 RED="\033[0;31m"
 CYAN="\033[0;36m"
 NC="\033[0m"
+
 # Bold/Bright versions
 B_GREEN="\033[1;32m"
 B_YELLOW="\033[1;33m"
@@ -32,8 +33,8 @@ B_CYAN="\033[1;36m"
 # === UTILITIES ===
 
 print_step() {
-    # Ensure the entire line including the decorations is colored
-    printf "\n${B_CYAN}=== %s ===${NC}\n" "$*"
+    # We use %b to ensure backslash escape sequences are expanded
+    printf "\n${B_CYAN}=== %b ===${NC}\n" "$*"
 }
 
 # === MAIN LOGIC ===
@@ -61,7 +62,7 @@ sync_submodules() {
         branch=$(git config -f .gitmodules --get "submodule.$name.branch" || echo "main")
         ignore=$(git config -f .gitmodules --get "submodule.$name.ignore" || echo "none")
 
-        print_step "Processing: ${B_CYAN}$name${NC}"
+        print_step "Processing: $name"
         printf "${GREEN}Path:${NC}   ${B_GREEN}$path${NC}\n"
         printf "${GREEN}URL:${NC}    ${B_GREEN}$url${NC}\n"
         printf "${GREEN}Branch:${NC} ${B_GREEN}$branch${NC}\n"
@@ -105,7 +106,7 @@ sync_submodules() {
                 if [ "$ignore" == "dirty" ]; then
                     printf "${YELLOW}[WARN] Untracked/modified changes in ${B_YELLOW}$path${YELLOW} ignore=${B_YELLOW}$ignore${NC}\n"
                 else
-                    print_step "Local changes detected in ${B_CYAN}$path${NC}. Committing and pushing"
+                    print_step "Local changes detected in $path. Committing and pushing"
                     git add .
                     git commit -m "Automated sync: $(date)"
                     git push origin "$branch"
@@ -124,11 +125,11 @@ sync_submodules() {
     git add .
 
     if [[ -n $(git status --porcelain) ]]; then
-        print_step "Committing and Pushing changes in ${B_CYAN}$REPO_NAME${NC}"
+        print_step "Committing and Pushing changes in $REPO_NAME"
         git commit -m "Automated submodule sync: $(date)"
         git push origin "$(git branch --show-current)"
     else
-        print_step "Committing and Pushing changes in ${B_CYAN}$REPO_NAME${NC}"
+        print_step "Committing and Pushing changes in $REPO_NAME"
         printf "${YELLOW}[WARN] No changes to commit in ${B_CYAN}$REPO_NAME${NC}\n"
     fi
 }
