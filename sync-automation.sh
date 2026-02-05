@@ -86,9 +86,9 @@ sync_submodules() {
         if [ -d "$path" ]; then
             pushd "$path" > /dev/null
             
-            git fetch origin --quiet
+            git fetch origin
             git checkout "$branch" 2>/dev/null || git checkout -b "$branch" "origin/$branch"
-            git pull origin "$branch" --quiet
+            git pull origin "$branch"
             
             # Check for local changes to push
             local has_changes
