@@ -79,7 +79,7 @@ Pull requests should include a clear description and working example.
 
 ## 📝 License
 
-MIT © 2025 [sandokan.cat](https://sandokan.cat)
+MIT © 2026 [sandokan.cat](https://sandokan.cat)
 
 > *Use it. Modify it. Share it. Attribution is appreciated.*
 
