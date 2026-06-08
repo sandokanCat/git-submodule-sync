@@ -2,7 +2,7 @@
 
 *Fix and sync all Git submodules in a single command.*
 
-> A professional shell script to automate the synchronization, initialization, and management of Git submodules with a high-intensity, expressive console interface.
+> Designed for multi-repository projects where submodule drift and manual sync issues become recurring problems.
 
 ---
 
