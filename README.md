@@ -1,12 +1,14 @@
 # Git Submodule Sync Automation
 
-*A professional shell script to automate the synchronization, initialization, and management of Git submodules with a high-intensity, expressive console interface.*
+*Fix and sync all Git submodules in a single command.*
+
+> A professional shell script to automate the synchronization, initialization, and management of Git submodules with a high-intensity, expressive console interface.
 
 ---
 
 ## 🚀 Overview
 
-[`sync-automation.sh`](./sync-automation.sh) is designed to streamline the workflow of projects using multiple submodules. It parses your [`.gitmodules`](./.gitmodules) file, ensures all modules are correctly initialized and downloaded, pulls the latest changes from their respective branches, and synchronizes everything with your main repository.
+Automates the synchronization, initialization, and safe updating of Git submodules. Designed to prevent broken states, out-of-sync dependencies, and manual drift in multi-repository projects using [`.gitmodules`](./.gitmodules).
 
 ---
 
